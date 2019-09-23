@@ -1,0 +1,1 @@
+ssh-keygen -o -t rsa -b 4096 -C "k3s" -f ./data/id_rsa -N ""
