@@ -10,7 +10,7 @@ resource "scaleway_server" "agent" {
 
 
 resource "null_resource" "join_node" {
-  depends_on = ["null_resource.copy_configs"]
+  depends_on = ["data.external.join_token"]
 
   count = "${var.instance_agents_count}"
   connection {
@@ -18,11 +18,14 @@ resource "null_resource" "join_node" {
     host        = "${element(scaleway_server.agent.*.public_ip, count.index)}"
     user        = "${var.ssh_user}"
     port        = "${var.ssh_port}"
-    private_key = local.ssh_private
+    private_key = "${local.ssh_private}"
   }
 
   provisioner "remote-exec" {
     inline = [
+      # "apt-get update",
+      # "DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes",
+      # "DEBIAN_FRONTEND=noninteractive apt-get install open-iscsi --yes",
       "${data.template_file.agent.rendered}"
     ]
   }
@@ -30,9 +33,14 @@ resource "null_resource" "join_node" {
 
 
 data "template_file" "agent" {
-  template = "${file("templates/agent_install.sh")}"
+  template = "${file("files/agent_install.sh")}"
   vars = {
     server_ip = "${scaleway_server.master.public_ip}"
-    token     = local.token
+    token     = "${data.external.join_token.result.token}"
   }
+}
+
+data "external" "join_token" {
+  depends_on = ["null_resource.copy_configs"]
+  program    = ["./files/fetch-token.sh"]
 }

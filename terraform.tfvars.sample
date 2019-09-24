@@ -27,16 +27,20 @@ instance_agents_count = "2"
 
 
 
-# Email for your Cloudflare account
-cloudflare_email = "@@@@gmail.com"
-
-# Cloudflare token
-cloudflare_token = "TOKEN_HERE"
-
-# Cloudflare zone
-cloudflare_zone = "akmsoftware.co.uk"
-
 #ssh user
 ssh_user             = "root"
 ssh_public_key_file  = "./data/id_rsa.pub"
 ssh_private_key_file = "./data/id_rsa"
+
+
+
+# # If you are going to use dns module you need to fill these variables up.
+
+# # Email for your Cloudflare account
+# cloudflare_email = "user@gmail.com"
+
+# # Cloudflare token
+# cloudflare_token = "token_here"
+
+# # Cloudflare zone
+# cloudflare_zone = "akmsoftware.co.uk"

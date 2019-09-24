@@ -25,15 +25,7 @@ variable "instance_image" {
   }
 }
 
-# Cloudflare
-variable "cloudflare_email" {}
-
-variable "cloudflare_token" {}
-
-variable "cloudflare_zone" {}
-
 # SSH
-
 variable "ssh_user" {
   description = "SSH user name to use for remote exec connections,"
   default     = "root"
@@ -54,7 +46,6 @@ variable "ssh_private_key_file" {
 }
 
 locals {
-  ssh_public  = fileexists(var.ssh_public_key_file) ? file(var.ssh_public_key_file) : ""
-  ssh_private = fileexists(var.ssh_private_key_file) ? file(var.ssh_private_key_file) : ""
-  token       = fileexists("./data/node-token") ? trimspace(file("./data/node-token")) : ""
+  ssh_public  = "${fileexists(var.ssh_public_key_file) ? trimspace(file(var.ssh_public_key_file)) : ""}"
+  ssh_private = "${fileexists(var.ssh_private_key_file) ? file(var.ssh_private_key_file) : ""}"
 }

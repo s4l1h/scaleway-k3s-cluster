@@ -15,11 +15,14 @@ resource "null_resource" "copy_configs" {
     host        = "${scaleway_server.master.public_ip}"
     user        = "${var.ssh_user}"
     port        = "${var.ssh_port}"
-    private_key = local.ssh_private
+    private_key = "${local.ssh_private}"
   }
 
   provisioner "remote-exec" {
     inline = [
+      # "apt-get update",
+      # "DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes",
+      # "DEBIAN_FRONTEND=noninteractive apt-get install open-iscsi --yes",
       "${data.template_file.master.rendered}"
     ]
   }
@@ -34,10 +37,16 @@ resource "null_resource" "copy_configs" {
   provisioner "local-exec" {
     command = "scp -i ${var.ssh_private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${var.ssh_user}@${scaleway_server.master.public_ip}:/var/lib/rancher/k3s/server/node-token ./data/node-token"
   }
+
+  provisioner "local-exec" {
+    when       = "destroy"
+    command    = "rm ./data/k3s.yaml;rm ./data/node-token"
+    on_failure = "continue"
+  }
 }
 
 data "template_file" "master" {
-  template = "${file("templates/server_install.sh")}"
+  template = "${file("files/server_install.sh")}"
   vars = {
     server_ip = "${scaleway_server.master.public_ip}"
   }

@@ -1,3 +1,4 @@
 resource "scaleway_ssh_key" "k3s" {
-  key = local.ssh_public
+  depends_on = ["scaleway_server.master"]
+  key        = "${local.ssh_public}"
 }
